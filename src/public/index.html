@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Real-Time Chat</title>
+</head>
+
+<body>
+    <h1>Real-Time Chat App</h1>
+    <div id="chat">
+        <ul id="messages"></ul>
+        <form id="messageForm">
+            <input id="messageInput" autocomplete="off" />
+            <button>Send</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Handle incoming chat messages
+        socket.on('chat message', (data) => {
+            if (!isMessageDuplicate(data)) {
+                appendMessage(data.user, data.message);
+            }
+        });
+
+        // Check if message is already in the UI
+        function isMessageDuplicate(message) {
+            const messages = document.getElementById('messages');
+            for (const li of messages.getElementsByTagName('li')) {
+                if (li.textContent === `${message.user}: ${message.message}`) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Handle form submission
+        document.getElementById('messageForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message !== '') {
+                // Immediately update the UI with the sent message
+                appendMessage('User', message);
+                // Emit the 'chat message' event to the server
+                socket.emit('chat message', { user: 'User', message });
+                input.value = '';
+            }
+        });
+
+        // Function to append a message to the UI
+        function appendMessage(user, message) {
+            const messages = document.getElementById('messages');
+            const li = document.createElement('li');
+            li.textContent = `${user}: ${message}`;
+            messages.appendChild(li);
+        }
+    </script>
+</body>
+
+</html>
