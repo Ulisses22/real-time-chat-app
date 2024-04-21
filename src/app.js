@@ -14,7 +14,7 @@ const io = socketIO(server);
 
 
 // Connection to MongoDB
-const mongoURI = ``;
+const mongoURI = `YOUR_URI`;
 
 mongoose.connect(mongoURI, {
     useNewUrlParser: true,
@@ -25,10 +25,10 @@ mongoose.connect(mongoURI, {
     console.error('Failed to connect to MongoDB:', err.message);
     process.exit(1);
 });
-// Mapear IDs de socket para nomes de usuário
+// Map socket IDs to user names
 const socketUserMap = {};
 
-// Dentro da função de conexão do socket.io
+// Inside the socket.io connection function
 io.on('connection', (socket) => {
     console.log('User connected: ', socket.id);
 
