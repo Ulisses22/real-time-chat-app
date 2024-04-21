@@ -3,62 +3,112 @@
 
 <head>
     <title>Real-Time Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
 </head>
 
 <body>
-    <h1>Real-Time Chat App</h1>
-    <div id="chat">
-        <ul id="messages"></ul>
-        <form id="messageForm">
-            <input id="messageInput" autocomplete="off" />
-            <button>Send</button>
-        </form>
+    <div class="container mt-5">
+        <h1 id="title" class="text-center mb-4">Real-Time Chat App</h1>
+        <!-- Formulário para escolher o nome de usuário -->
+        <div id="usernameForm" class="text-center mb-4">
+            <form id="usernameInputForm">
+                <div class="form-group">
+                    <label for="usernameInput">Choose Your Username:</label>
+                    <input id="usernameInput" type="text" class="form-control" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <!-- Área de chat -->
+        <div id="chat" class="border p-3" style="display: none;">
+            <ul id="messages" class="list-unstyled"></ul>
+            <form id="messageForm" class="mt-3">
+                <div class="input-group">
+                    <input id="messageInput" type="text" class="form-control" autocomplete="off">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
+
     <script>
         const socket = io();
+        let character;
 
-        // Handle incoming chat messages
-        socket.on('chat message', (data) => {
-            if (!isMessageDuplicate(data)) {
-                appendMessage(data.user, data.message);
+        // Exibir o formulário de escolha de nome de usuário
+        document.getElementById('usernameForm').style.display = 'block';
+
+        // Manipulador de envio do formulário de escolha de nome de usuário
+        document.getElementById('usernameInputForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const usernameInput = document.getElementById('usernameInput').value.trim();
+            if (usernameInput !== '') {
+                // Emitir evento 'user name' para o servidor com o nome de usuário escolhido
+                socket.emit('user name', usernameInput);
+                // Atualizar o título da página com o nome de usuário escolhido
+                const title = document.getElementById('title').innerText = `Real-Time Chat - ${usernameInput}`;
+                document.title = `Real-Time Chat - ${usernameInput}`;
+                // Ocultar o formulário de escolha de nome de usuário
+                document.getElementById('usernameForm').style.display = 'none';
+                // Exibir a área de chat
+                document.getElementById('chat').style.display = 'block';
             }
         });
 
-        // Check if message is already in the UI
-        function isMessageDuplicate(message) {
-            const messages = document.getElementById('messages');
-            for (const li of messages.getElementsByTagName('li')) {
-                if (li.textContent === `${message.user}: ${message.message}`) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // Handle form submission
+        // Manipulador de envio de mensagens
         document.getElementById('messageForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
             if (message !== '') {
-                // Immediately update the UI with the sent message
-                appendMessage('User', message);
-                // Emit the 'chat message' event to the server
-                socket.emit('chat message', { user: 'User', message });
+                // Emitir o evento 'chat message' para o servidor com a mensagem e o nome de usuário
+                socket.emit('chat message', { userName: character, message: message }); // Alterado 'userName' para 'user'
                 input.value = '';
             }
         });
 
-        // Function to append a message to the UI
-        function appendMessage(user, message) {
+        // Função para adicionar uma mensagem à UI
+        function appendMessage(userName, message) {
             const messages = document.getElementById('messages');
             const li = document.createElement('li');
-            li.textContent = `${user}: ${message}`;
+            li.textContent = `(You)${userName}: ${message}`;
             messages.appendChild(li);
         }
+
+        // Manipulador de evento para atualizar o nome de usuário quando recebido do servidor
+        socket.on('user name', (name) => {
+            character = name;
+        });
+
+        // Manipulador de evento para lidar com mensagens recebidas do servidor
+        socket.on('chat message', (data) => {
+            if (!isMessageDuplicate(data)) {
+                appendMessage(data.userName, data.message);
+            }
+        });
+
+        // Função para verificar se a mensagem já está na UI
+        function isMessageDuplicate(message) {
+            const messages = document.getElementById('messages');
+            for (const li of messages.getElementsByTagName('li')) {
+                // Verifica se o nome de usuário e a mensagem são idênticos
+                if (li.textContent === `${message.userName}: ${message.message}`) {
+                    return true;
+                }
+            }
+            return false;
+        }
     </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
 </body>
 
 </html>
