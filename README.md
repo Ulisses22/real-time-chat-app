@@ -3,11 +3,11 @@
 This is a simple real-time chat application built using Nodejs, Express.js, Socket.IO, and MongoDB.
 ### Features
 
--     User can choose a username.
--     User can send messages in real-time.
--     Messages are saved to MongoDB.
--     Usernames are displayed next to messages.
--     User's own messages are indicated with "(You)".
+- User can choose a username.
+- User can send messages in real-time.
+- Messages are saved to MongoDB.
+- Usernames are displayed next to messages.
+- User's own messages are indicated with "(You)".
 
 ### Technologies Used
 
