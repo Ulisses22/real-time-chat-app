@@ -19,23 +19,22 @@ This is a simple real-time chat application built using Nodejs, Express.js, Sock
 ### Getting Started
 
 1. Clone the repository:
-
-	`git clone https://github.com/your_username/real-time-chat.git`
+    `git clone https://github.com/your_username/real-time-chat.git`
 2. Install dependencies:
 	`cd real-time-chat`
 	` npm install`
 3. Start the server:
-`npm app.js`
+    `npm app.js`
 4. Open your web browser and navigate to http://localhost:3002.
 Enter a username and start chatting!
 
 ## File Structure
 
--     app.js: Entry point of the server application.
--     public/index.html: HTML template for the chat interface.
--     public/socket.io/socket.io.js: Socket.IO client library.
--     models/Message.js: Mongoose schema for storing chat messages.
--     package.json: Project configuration and dependencies.- 
+- app.js: Entry point of the server application.
+- public/index.html: HTML template for the chat interface.
+- public/socket.io/socket.io.js: Socket.IO client library.
+- models/Message.js: Mongoose schema for storing chat messages.
+- package.json: Project configuration and dependencies.- 
 
 ### License
 
